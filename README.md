@@ -63,7 +63,7 @@ Google, Yahoo, and Amazon – all agree that a slow website has a negative impac
 
 HtmlSpeed exclusively implements three front end optimizations (FEO) techniques:
 
-* Gradually declining inline optimization – dramatically decreasing the number of requests while preserving bandwidth usage
+* Gradually declining inline optimization – dramatically decreasing the<br>number of requests while preserving bandwidth usage
 * Content first optimization – Start page rendering before Java scripts (JS)
 * Unmodified state-full pages detection – Status 304 is returned to browser
 
