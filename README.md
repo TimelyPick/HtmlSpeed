@@ -1,5 +1,11 @@
 # HtmlSpeed
-Frontend accelarator for websites (implemented as a reverse proxy written in Java)
+
+Html-Speed is a **reverse proxy** written in **Java**.<br>
+It is used for boosting the performance of websites by applying<br>
+**front-end optimizations** to both static and dynamic content.<br>
+For a list of features and deployment options, see the
+[introductory blog post](http://www.timelypick.com/blog/2016/02/htmlspeed-first-release/).<br><br>
+
 
 <img src="https://cloud.githubusercontent.com/assets/6310421/12713473/9b31590c-c8d7-11e5-9ec5-065b62b34331.png" height="150" alt="html-speed-logo">
 
