@@ -89,6 +89,22 @@ HtmlSpeed also improves website performance by implementing some common optimiza
 	When you run more than one HtmlSpeed server, and you decide to change any
 	configuration-file, you should do so in all HtmlSpeed server machines.
 
+### license.dat
+
+	This configuration file contains the license controling which domains/sub-domains are allowed
+	to be service by HtmlSpeed. You can't modify this file. When you need to change/extend the
+	license, you will have to generate another file. The license mecahnism has been developed for
+	protecting HtmlSpeed software from beeing used to accelarate unauthorized domains.
+
+	When your domain www.yyy.com is services by HtmlSpeed servers, and web-pages in that domain
+	use images, java-scripts, etc' from domain www.zzz.com, then you don't need license for domain
+	www.zzz.com. License for www.zzz.com is only required when domain www.zzz.com is serviced
+	by HtmlSpeed servers.
+
+	When the issued license specifies "others" as a licensed domain in the list of authorized domains
+	then http-requests directed to unlicensed domains are routed (but not optimized) using the routing-
+	info for domain "others" in hostinfo.txt (see bellow).
+
 ### hostinfo.txt
 
 	This configuration file contains exactly a single logical line (that can be splitted into several lines).
@@ -282,6 +298,196 @@ HtmlSpeed also improves website performance by implementing some common optimiza
 
   In the example, the home-page of website www.kuku.com is auto-refreshed
   each 60 seconds. The /news page is refreshed each 120 seconds.
+
+## properties.txt
+
+	Each line in the properties file contains: 
+				property-name    property-value
+
+	The value is separated from the name by at least one blank or tab.
+
+	remove.from.html
+		When specified, each occurence of the string is removed from all html pages.
+		Used mainly for removing port number of original webserver (example: 8081).
+
+	debug
+		When true (default), debug information is written to log (standard-output).
+
+	min.huge
+		Minimum size in bytes of huge files (default 64K bytes). Huge files are never inlined.
+
+	min.large
+		Minimum size in bytes of large files (default 32K bytes). Large files are only inlined in first-vist.
+
+	min.medium
+		Minimum size in bytes of medium files (default 8K bytes). Medium files are inlined in first
+		and second visits.
+
+	min.small
+		Minimum size in bytes of small files (default 200 bytes). Small files are inlined in first
+		second and third visits.
+
+	redirects
+		When 0 (default), http status 301(Moved Permanently) are routed back to browser.
+		When 1, HtmlSpeed server fetches the resource from redirected to location (used
+		by some websites for redirecting resources to cdn without mapping a subdomain
+		(not using DNS).
+
+	delay.iframe
+		When false (default), HtmlSpeed replaces content-first pages by loaded iframe
+		as soon as possible. When true, replacement by iframe is delayed to enable
+		javascripts (that clears the page before building it) to be executed in the background.
+
+	ssl.localhost
+		When true (the default) HtmlSpeed invokes services on original webserver using
+		https, when https is used by the browser and they are both on same machine.
+
+	ssl.protocols
+		Selects the SSL protocol/s that is/are used by the web-server that host the original web-site.
+		In the above example the protocol is TLS version 1.0. The protocol that is used by the
+		original web-server can be found by surfing to a secured section in the original web-site,
+		using chrome, and clicking on the locker-icon in the address bar.
+
+	ssl.trustall
+		When false (default), content server is only trusted by HtmlSpeed when having a valid certificate
+		that is signed by a trusted certificate-authority. When true, then content server is always trusted.
+
+	session.cookies
+		A comma separated list of names of session-cookies that are used by the original web-server
+		for identifying sessions with browsers. HtmlSpeed uses these cookies when routing incoming browser
+		requests to the specific original-server who created the session with the requesting browser. Additionaly,
+		resouces generating these cookies (session starters) are forced to be state-full (can't be inlined).
+
+	proxy.headers
+		When true then HtmlSpeed adds X-Forwarded-For and X-Real-IP headers to http-requests (when missing).
+
+	fixed.maxage
+		When false (default), the value of max-age header that is returned to the browser
+		is relative (current-time minus load-from-website time is subtracted from it).
+		When true, the value of returned max-age is fixed as long as the resource is fresh.
+
+	min.maxage
+		The minumum value of max-age of state-less resources (default is 420 meaning 7 minutes).
+		When max-age is smaller the resource is assumed to be state-full, unless forced to be state-
+		less by state-less.txt. When a resource having smaller max-age is forced to be state-less its
+		max-age header changes to htmlspeed.min.maxage.
+
+	max.maxage
+		The maximum number of seconds that a state-less resource is allowed to be cached by
+		HtmlSpeed servers. The default is 0 which means that the max-age returned by original
+		server when resource has been loaded limits the maximum allowed caching time.
+
+	page.maxage
+		When >= 0 then page.maxage forces an upper limit on the value of returned max-age for
+		state-less (cached) pages.
+
+	variants
+		Limiting inline-degree (visits) for state-less and state-full pages.
+		The value is 2 or 4 single-digit numbers separated by commas:
+			min-state-less,max-state-less[,min-state-full,max-state-full]
+		Each value is in the range: 0..4
+		0: first-visit, 1: first-plus-visit, 2: second-visit, 3: third-visit, 4: forth-visit.
+		When min and max visit numbers for state-full pages are not supplied
+		they are defaulted to 0,4 (no limit is forced).
+
+		When state-less pages are routed through a CDN min-state-less
+		should eq	ual max-state-less (0: means aggressive inline, and 4:
+		means no-inline). When min-state-less and max-state-less differ,
+		the key "private" is added to the "Cache-Control" header of the
+		response.
+
+		Inline-degree can also be limited for state-full pages to preserve
+		bandwidth. Usualy when resources are served by CDN then 2'nd
+		visit will be used, so that larger resources will not be inlined but
+		will be fetched from CDN.
+
+	versioning
+		When true (default is false) automatic file-versioning optimization is enabled.
+		Important: file-versioning should not be enabled when some but not all machines
+		in the farm run HtmlSpeed server, because files that are referenced by versioned
+		file-names can't be served by the original web-servers.
+
+	ie.min.content.first
+		The smallest IE browser version for whom content-first optimizations are applied (default is 9).
+
+	base.target.parent
+		When true (default is true) the head section of content-first pages contains
+		<base target='_parent'>
+
+	max.threads
+		Maximum number of threads (default is 2000) that HtmlSpeed can use for processing
+		responses from the original web-servers (host).
+
+	max.connections
+		Maximum number of connections (default is 2000) that HtmlSpeed is allowed to use
+		for accessing the original web-servers (host).
+
+	connect.timeout
+		Maximum number of milliseconds (default is ) that HtmlSpeed waits for connections
+		with original web-server (host) to be established.
+
+	timeout
+		Maximum number of milliseconds (default is 30000) that HtmlSpeed waits for
+		receiving responses from the original web-servers (host).
+
+	idle.timeout
+		The number of milliseconds (default is 300000) before idle connections with
+		the original web-server (host) are closed.
+
+	cdn-1
+	cdn-2
+	...
+		Format:
+			src-domain,min-size,max-size,cdn-domain[,cdn-ssl-domain]
+		min-size and max-size are in Kbytes.
+		The CDN rule defines that each resource from domain src-domain whos size is
+		between min-size and max-size should be served using the domain cdn-domain
+		when using http and cdn-ssl-domain when using https (that is assumed to be
+		routed through a CDN). When cdn-ssl-domain is not supplied the same domain
+		is used for both http and https.
+
+	hosts.map
+		When specified contains: srcHost1,dstHost1,srcHost2,dstHost2, ... , srcHostn,dstHostn
+		HtmlSpeed routes http requests from srcHosti to dstHosti
+		Mainly used for debuggin purposes.
+
+	jpeg.min
+		Minimum size in K-bytes of jpeg images to be optimized
+		(when specified then jpeg.quality should also be specified).
+
+	jpeg.quality
+		Quality of optimized jpeg images range:  0.0 .. 1.0
+		Usualy 0.8 is good enough.
+
+	mobile.home
+		When true (default is false) then the home-page is state-full for mobile devices including iPad)
+
+	replace.src
+		The string whos first-occurence in html pages is to be replaced by a near dst. The first-occurence
+		of src is replaced by: replace.before (when specified), followed by replacing-dst exculding its first
+		replace.dst.skip characters (when replace.dst.prefix and replace.dst.suffix are specified), followed
+		by replace.after (when specified).
+
+	replace.dst.prefix
+		The start (prefix) of the replacing string (when null no replace-dst is used)
+
+	replace.dst.suffix
+		The end (suffix) of the replacing string
+
+	replace.dst.skip
+		The number of characters from start of dest string that are skipped when
+		replacing the src string (default is 0).
+
+	replace.before
+		The string to insert before the replaced string (optional)
+
+	replace.after
+		The string to insert after the replaced string (optional)
+
+	filen.suffix
+	filen.replace.xxx
+		Same as replace.xxx for the file whos url ends with filen.suffix (the file can be
+		any file not just html page (note: replace.xxx are only applied to html-pages).
 
 ## License
 
