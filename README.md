@@ -2,8 +2,9 @@
 
 Html-Speed is a **reverse proxy** written in **Java**.<br>
 It is used for **accelerating performance of websites** by<br>
-improving **page load speed** and by **optimizing the caching of resources**.<br>
-This is acheived by applying **front-end optimizations** to both static and dynamic content.<br>
+improving **page load speed** and reducing load on webservers.<br>
+This is acheived by applying **front-end optimizations** to both<br>
+static and dynamic content and by **optimizing the caching of resources**.<br>
 For a list of features and deployment options, see the
 [introductory blog post](http://www.timelypick.com/blog/2016/02/htmlspeed-first-release).<br><br>
 
