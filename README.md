@@ -296,7 +296,7 @@ HtmlSpeed also improves website performance by implementing some common optimiza
 	    120 http://www.kuku.com/news
 ```
 
-  In the example, the home-page of website www.kuku.com is auto-refreshed
+  In the example, the home-page of website ```www.kuku.com``` is auto-refreshed
   each 60 seconds. The /news page is refreshed each 120 seconds.
 
 ## properties.txt
