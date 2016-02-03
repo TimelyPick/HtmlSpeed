@@ -79,6 +79,210 @@ HtmlSpeed also improves website performance by implementing some common optimiza
 * Cache optimization – filename versioning (CSS, JavaScript, images)
 * Gzip compression – except for images
 
+## Configuration-files:
+
+	All configuration-files are stored in the directory htmlspeed.
+
+	HtmlSpeed servers check once each 30 seconds if any configuration file has changed,
+	by using the last-update time in the file-system. They handle changes on the fly.
+
+	When you run more than one HtmlSpeed server, and you decide to change any
+	configuration-file, you should do so in all HtmlSpeed server machines.
+
+### hostinfo.txt
+
+	This configuration file contains exactly a single logical line (that can be splitted into several lines).
+
+	It is used for mapping each domain/sub-domain that is serviced by the current HtmlSpeed server
+	to one or more ip-addresses of original web-servers (private ip-addresses are prefered), and
+	optionaly specify the weight of each server.
+
+	A domain starting with '.' represents a default for all sub-domains of the domain that follows.
+	For example ".aaa.com" will match "www.aaa.com" and "bbb.aaa.com" but not "aaa.com".
+
+	The domain "others" is used for defining routing-information for unlicensed domains.
+	HtmlSpeed routes requests for unlicensed domains (without optimizing them) only when
+	license.dat lists others as an authorized domain (otherwise error 500 is returned).
+
+  ```
+  [withfirstplus/]www.yyy.com,ipAddress1[-w1],ipAddress2[-w2],zzz.yyy.com,ipAddress3[-w3],www.sss.com,ipAddress4[-w4][/]
+
+	[-wNNN]
+		Optional original-server weight (its relative computing strenth).
+		When supplied, must be an integer in the range 1..127.
+		Defaulted to 1, when not supplied.
+
+	ipAddressNNN
+		Format: ip-address[:htmlPort:sslPort]
+		Private IP addresses are prefered over public IP addresses.
+		When no ports are specified, HtmlSpeed uses ports 80 and 443.
+		A colon ':' preceeds each specified port.
+		HtmlSpeed server balances the load between original-servers, using weighted round-robin algorithm.
+		When session sticky-cookies are used, then HtmlSpeed server routes requests belonging to a session
+		to the original-server who created the session.
+
+	domains/sub-domains:
+		A domain starting with '.' represent all subdomains of the domain/sub-domain that follows.
+		Domains starting with '.' should be listed after sub-domains that are routed to other ip-addresses
+		(thus they specify default mapping for remaining sub-domains).
+
+		The domains ttt.com and www.ttt.com should separately be listed in hostinfo.txt
+
+	[/]
+		Only when the line end with '/' then content-first optimization will be applied to
+		web-pages listed in content-first.txt (see: below).
+
+	[withfirstplus/]
+		When jumping from a web-page to another web-page in the same site, HtmlSpeed servers
+		don't inline the largest images, style-sheets, java-scripts. That's because usualy style-sheets
+		and java-scripts are shared between pages in the site, and when browsing the site these files
+		are cached from visiting previous pages in the web-site. This behaviour preserves bandwidth.
+
+		When specified, the withfirstplus option tells HtmlSpeed server that when jumping from a web-
+		page to another web-page in the same site to use first-plus visit, which means that only largest
+		java-script and style-sheets are not inlined but larger images are inlined. Otherwise the larger
+		images will not be inlined. This option should be specified, when large images are not shared
+		between web-pages of the web-site.
+  ```
+
+	When a running HtmlSpeed server detects that the file hostinfo.txt has changed, it adapts to the changes.
+	The in-memory cache is not cleared, thus you can freely change the hostinfo.txt (without experiencing
+	temporary performance degradation).
+
+### state-full.txt
+
+	This configuration file selects files (resources) that are forced to be state-full.
+	A state-full resource is not cached by HtmlSpeed server (because each browser
+	may receive specialized content, or because the resource returns a session-cookie).
+	State-full resource are never inlined in their containers, because they must separately
+	be fetched by the browser.
+
+	HtmlSpeed automaticaly detects state-full resources, using http-headers returned
+	by the original web-server (such as Cache-Control and Last-Modified headers). All
+	resources that can only be cached for less than htmlspeed.min.maxage seconds
+	are automaticaly state-full.
+
+	In the state-full.txt configuration file you can force files (resources) to be state-full,
+	to prevent them from being inlined or cached by HtmlSpeed servers. Usualy this is
+	not required. Thus, the existance of this configuration-file is optional.
+
+	File-format (by example):
+		11
+		html
+		/Img/1.jpg
+		*k.jpg
+		*imgs*
+		http://www.other.com/*.jpg
+
+	The first line contains a version number (you should increase this number when changing the file).
+	Each other line selects resources that are forced to be state-full. Up to two '*' can be used, for selecting
+	group of resources (example: *k.jpg means all resoources that end with k.jpg). Resources beginning
+	with '/' are resources from current web-site. Resources from other sites begins with "http://" or "https://".
+
+	When a web-page is defined to be statefull, then no optimizations are applied to the page.
+
+	A row whos content is "html" declares all html pages (having content-type "text/html") to
+	be statefull (not cached by HtmlSpeed). Html pages that are not selected by other rows in
+	state-full.txt and are statefull only because of the "html" declaration are fully optimize.
+
+	When a running HtmlSpeed server detects that state-full.txt has changed it clears its memory cache,
+	and adapts to the changes. This may cause some performance-degradation for a short time, until
+	the in-memory cache is rebuilt.
+
+### state-less.txt
+
+	This configuration file selects files (resources) that are forced to be state-less.
+	State-less resources are cached by HtmlSpeed server and can be inlined in their
+	containers.
+
+	HtmlSpeed automaticaly detects state-less resources, using http-headers returned by
+	the original web-server (such as Cache-Control and Last-Modified headers).
+
+	In the state-less.txt configuration file you can force files (resources) to be state-less,
+	to enable them to be inlined and cached by HtmlSpeed servers. Usualy this is not
+	required. Thus, the existance of this configuration-file is optional.
+
+	Some web-sites erroneously return "private" in the Cache-Control response headers
+	of all fetched images/css/java-scripts. This causes HtmlSpeed to make all resources
+	state-full and thus no optimizations are allowed. In the state-less.txt configuration file
+	you can force images, css, java-scripts that should be state-less to be state-less.
+	This enables HtmlSpeed to optimize web-pages containing these resources.
+
+	HtmlSpeed servers never forces resources that generate session-cookies and those
+	that are explicitely configured to be state-full to become state-less, even when they
+	are selected by state-less.txt.
+
+	A row whos content is "html" declares all html pages (having content-type "text/html")
+	to be stateless (cached by HtmlSpeed).
+
+	When a running HtmlSpeed server detects that state-less.txt has changed it clears its memory cache,
+	and adapts to the changes. This may cause some performance-degradation for a short time, until
+	the in-memory cache is rebuilt.
+
+	File-format: same as state-full.txt file-format.	
+
+### content-first.txt
+
+	This configuration file selects web-pages that are content-first optimized.
+
+	When content-first optimized web-page is displayed, then all java-scripts
+	contained in the page are skiped (thus they don't delay the display of text
+	and images in the page). In the meantime an invisible iframe is built in which
+	the web-page is fully displayed (its java-script are executed). When the DOM
+	of the iframe is ready then the iframe containing the fully rendered web-page
+	replaces the previously displayed web-page. This improves the user-experience
+	because the content of the web-page is displayed as soon as possible, and the
+	commercials are displayed when ready.
+
+	The configuration file usualy list only web-pages and java-script resources.
+	The web-pages must begin with "http://" or '*'.
+
+	Content-first optimization may only be applied to top-level web-pages. It is not
+	allowed for web-pages that are originaly displayed inside iframes.
+
+	When content-first optimized web-pages uses java-scripts that modify the "location"
+	of the web-page (navigating to other pages via java-script instead of hyper-links),
+	then these java-scripts should also be listed in the content-first.txt file.
+
+	Using content-first optimization will improve speed only when long-running java-scripts
+	in the web-page delay the display of text/images for too long.
+
+	Content-first optimization can't be used when the web-page contains java-scripts
+	that act differently when the page is displayed inside an iframe, because content-
+	first optimization do put the web-page inside an iframe !!!!
+
+	This file is only relevant when content-first optimization is enabled by hostinfo.txt.
+
+	When a running HtmlSpeed server detects that content-first.txt has changed it clears its memory cache,
+	and adapts to the changes. This may cause some performance-degradation for a short time, until
+	the in-memory cache is rebuilt.
+
+	File-format: Same as state-full.txt file-format with the exception that only full
+		    url should be spedified for web-pages (starting with "http://" or '*').
+
+### no-inline.txt
+
+	This configuration file selects images that should not be inlined in their containing style-sheets.
+
+	This configuration file is used when many images are referenced by a style-sheet but only a
+	small number of background images are actualy used. Inlining these images causes a waste
+	of bandwidth, because most of the inlined images will not be used by the browser. On most
+	web-sites there is no such problem. Thus, the existance of this configuration-file is optional.
+
+	File-format: same as state-full.txt file-format.
+
+### auto-refreshed.txt
+
+	Contains a list of state-less pages that are periodicaly refreshed by HtmlSpeed
+	Example:
+```
+	    60  http://www.kuku.com/
+	    120 http://www.kuku.com/news
+```
+
+  In the example, the home-page of website www.kuku.com is auto-refreshed
+  each 60 seconds. The /news page is refreshed each 120 seconds.
+
 ## License
 
 HtmlSpeed was originally written by [Eldad Zamler](http://www.timelypick.com/play-solitaire) and is
