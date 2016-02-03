@@ -243,14 +243,14 @@ HtmlSpeed also improves website performance by implementing some common optimiza
 
 	This configuration file selects web-pages that are content-first optimized.
 
-	When content-first optimized web-page is displayed, then all java-scripts
-	contained in the page are skiped (thus they don't delay the display of text
-	and images in the page). In the meantime an invisible iframe is built in which
-	the web-page is fully displayed (its java-script are executed). When the DOM
-	of the iframe is ready then the iframe containing the fully rendered web-page
-	replaces the previously displayed web-page. This improves the user-experience
-	because the content of the web-page is displayed as soon as possible, and the
-	commercials are displayed when ready.
+	When a content-first optimized web-page is displayed, an iframe occupying the
+	entire window is opened above the page. In the iframe the page is rendered
+	without executing the Java-Scripts. Thus the Java-Scripts don't	delay the
+	display of text and images in the page. In the meantime bellow the displayed
+	iframe the web-page is fully prepared (its java-script are executed). When the
+	DOM of the full page is ready, then the iframe is removed and the full page is
+	revealed. This improves the user-experience because the content of the web-page 
+	is displayed as soon as possible, and the commercials are displayed when ready.
 
 	The configuration file usualy list only web-pages and java-script resources.
 	The web-pages must begin with "http://" or '*'.
