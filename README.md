@@ -491,6 +491,39 @@ HtmlSpeed also improves website performance by implementing some common optimiza
 		Same as replace.xxx for the file whos url ends with filen.suffix (the file can be
 		any file not just html page (note: replace.xxx are only applied to html-pages).
 
+## Starting HtmlSpeed
+
+	HtmlSpeed is a Java web-application. It can be deployed to the open-source and freeware Java web-server
+	named Jetty. The Jetty web-server is part of the open-source eclipse project (see: http://eclipse.org/jetty)
+	that is sponsered by IBM. Eclipse is largly used by the Java community.
+
+	Deploy HtmlSpeed to Jetty by copying the file HtmlSpeedServer.war into the directory
+		~home/jetty-8.1.5/webapps.
+
+	Note: "home" stands for the Linux user-name containing the installation.
+
+	To start HtmlSpeed server:
+
+		cd ~home/jetty-8.1.5
+		java -Xmx3g -jar start.jar > /dev/null 2>&1 &
+
+	-Xmx3g
+		Means that 3 Giga-bytes is the MaXimum heap-size (memory) that can be allocated by the web-server.
+		This parameter should be set to be 1 giga-byte less than the amount of phisical memory. For
+		example when the server has 4 giga-bytes of phisical memory then 3 giga-bytes should be
+		allocated to the web-server. Larger memory will enable HtmlSpeed to cache more resources
+		in its memory.
+
+	-jar start.jar
+		The standard way to start the Jetty web-server.
+
+	> /dev/null 2>&1
+		Redirecting the output from HtmlSpeed server to null-device.
+
+	Jetty can also be executed on the Windows operating-system.
+
+	Note: To stop HtmlSpeed you have to "kill" the java process running the web-server.
+
 ## License
 
 HtmlSpeed was originally written by [Eldad Zamler](http://www.timelypick.com/play-solitaire) and is
