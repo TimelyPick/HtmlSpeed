@@ -513,7 +513,7 @@ HtmlSpeed also improves website performance by implementing some common optimiza
 	To start the HtmlSpeed server:
 
 		cd c:\jetty-8.1.5
-		java -Xmx3g -Dorg.apache.jasper.compiler.disablejsr199=true -jar start.jar > /dev/null 2>&1 &
+		java -Xmx3g -Dorg.apache.jasper.compiler.disablejsr199=true -jar start.jar
 
 	-Xmx3g
 		Means that 3 Giga-bytes is the MaXimum heap-size (memory) that can be allocated by the web-server.
