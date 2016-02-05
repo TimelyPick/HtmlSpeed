@@ -530,9 +530,6 @@ HtmlSpeed also improves website performance by implementing some common optimiza
 	-jar start.jar
 		The standard way to start the Jetty web-server.
 
-	> /dev/null 2>&1
-		Redirecting the output from HtmlSpeed server to null-device.
-
 	The deployed HtmlSpeed web-application is located at:
 		C:\jetty-8.1.5\webapps\HtmlSpeedServlet.war.
 
