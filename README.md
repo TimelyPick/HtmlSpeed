@@ -491,28 +491,41 @@ HtmlSpeed also improves website performance by implementing some common optimiza
 		Same as replace.xxx for the file whos url ends with filen.suffix (the file can be
 		any file not just html page (note: replace.xxx are only applied to html-pages).
 
-## Starting HtmlSpeed
+## Example
+
+	Download the file HtmlSpeedExample1.zip from release 1.1
+	Unzip it directly under c: (on Windows operating system).
+	The zip-file contains a ready-to-run Jetty webserver and
+	all configuration files that are needed	to enhance the
+	website www.buzzfeed.com (just an example).
 
 	HtmlSpeed is a Java web-application. It can be deployed to the open-source and freeware Java web-server
 	named Jetty. The Jetty web-server is part of the open-source eclipse project (see: http://eclipse.org/jetty)
 	that is sponsered by IBM. Eclipse is largly used by the Java community.
 
-	Deploy HtmlSpeed to Jetty by copying the file HtmlSpeedServer.war into the directory
-		~home/jetty-8.1.5/webapps.
+	To route the domain www.buzzfeed.com to your localhost, add the
+	following line to the file C:\Windows\System32\drivers\etc\hosts:
+		127.0.0.1		www.buzzfeed.com
+	After that open a cmd window and type: ipconfig /flushdns
+	After that restart the browser.
+	This will cause your local browser to access the HtmlSpeed server that is running on localhost.
+	
+	To start the HtmlSpeed server:
 
-	Note: "home" stands for the Linux user-name containing the installation.
-
-	To start HtmlSpeed server:
-
-		cd ~home/jetty-8.1.5
-		java -Xmx3g -jar start.jar > /dev/null 2>&1 &
+		cd c:\jetty-8.1.5
+		java -Xmx3g -Dorg.apache.jasper.compiler.disablejsr199=true -jar start.jar > /dev/null 2>&1 &
 
 	-Xmx3g
 		Means that 3 Giga-bytes is the MaXimum heap-size (memory) that can be allocated by the web-server.
-		This parameter should be set to be 1 giga-byte less than the amount of phisical memory. For
-		example when the server has 4 giga-bytes of phisical memory then 3 giga-bytes should be
-		allocated to the web-server. Larger memory will enable HtmlSpeed to cache more resources
-		in its memory.
+		This parameter should be set to be 1 giga-byte less than the amount of phisical memory. For example
+		when the server has 4 giga-bytes of phisical memory then 3 giga-bytes should be allocated to the
+		web-server. Larger memory will enable HtmlSpeed to cache more resources in its memory.
+
+	-Dorg.apache.jasper.compiler.disablejsr199=true
+		To enable serving JSP files.
+
+	-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n
+		Only when you want to debug the webserver.
 
 	-jar start.jar
 		The standard way to start the Jetty web-server.
@@ -520,9 +533,16 @@ HtmlSpeed also improves website performance by implementing some common optimiza
 	> /dev/null 2>&1
 		Redirecting the output from HtmlSpeed server to null-device.
 
-	Jetty can also be executed on the Windows operating-system.
+	The deployed HtmlSpeed web-application is located at:
+		C:\jetty-8.1.5\webapps\HtmlSpeedServlet.war.
 
-	Note: To stop HtmlSpeed you have to "kill" the java process running the web-server.
+	When a page is accessed through HtmlSpeed for the first time, it is not
+	accelerated. Thus you should clear the browser cache and browse again to
+	buzzfeed to experience a performance boost.
+
+	Jetty can also be executed on Linux.
+
+	To stop HtmlSpeed you have to "kill" the java process running the web-server.
 
 ## License
 
