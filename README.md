@@ -6,7 +6,7 @@ improving **page load speed** and **reducing load on webservers**.<br>
 This is achieved by applying **front-end optimizations** to both<br>
 static and dynamic content and by **optimizing the caching of resources**.<br>
 For a list of features and deployment options, see the
-[introductory blog post](http://www.timelypick.com/blog/2016/02/htmlspeed-first-release).<br><br>
+[introductory blog post](https://www.timelypick.com/blog/2016/02/htmlspeed-first-release).<br><br>
 
 
 <img src="https://cloud.githubusercontent.com/assets/6310421/12713473/9b31590c-c8d7-11e5-9ec5-065b62b34331.png" height="150" alt="html-speed-logo">
@@ -543,5 +543,5 @@ HtmlSpeed also improves website performance by implementing some common optimiza
 
 ## License
 
-HtmlSpeed was originally written by [Eldad Zamler](http://www.timelypick.com/play-solitaire) and is
+HtmlSpeed was originally written by [Eldad Zamler](https://www.timelypick.com/play-solitaire) and is
 licensed under the [MIT license](LICENSE).
